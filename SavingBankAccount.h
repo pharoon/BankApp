@@ -6,8 +6,19 @@
 
 class SavingBankAccount : public BankAccount
 {
+private:
+    double minimum_balance;
 public:
     SavingBankAccount(double a);
+    SavingBankAccount(double amount, double minimum);
+    //setters//
+    void set_minbalance(double newb);
+    //getters//
+    double get_minbalance();
+    //functions//
+    bool withdraw(double out);
+    void deposit(double in);
+    void display();
 };
 
 

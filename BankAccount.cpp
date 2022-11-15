@@ -2,7 +2,7 @@
 #include "BankAccount.h"
 
 BankAccount::BankAccount(double b) : balance1(b) {
-    if (b <= 0){
+    if (b < 0){
         throw std::invalid_argument("balance");
     }
     ID = "FCAI." + to_string(++id_count);

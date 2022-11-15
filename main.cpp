@@ -1,19 +1,138 @@
-#include "SavingBankAccount.h"
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+static int id_count{100};
+
+class BankAccount
+{
+protected:
+    string type;
+    string ID;
+    double balance1;
+
+public:
+    double get_B() { return balance1; }
+    string get_I() { return ID; }
+    string get_t() { return type; }
+    void Display_info()
+    {
+        cout << "your account ID: " << ID << endl;
+        cout << "your account type: " << type << endl;
+
+        cout << "your account balance: " << balance1 << endl;
+    };
+
+    BankAccount(double b) : balance1(b)
+    {
+        if (b < 0)
+        {
+            throw std::invalid_argument("balance");
+        }
+        ID = "FCAI." + to_string(++id_count);
+        type = "(basic)";
+    }
+
+    virtual bool withdraw(double amount)
+    {
+        if (amount <= 0)
+        {
+            cout << "insufficient amount." << endl;
+            return false;
+        }
+        else if (balance1 >= amount)
+        {
+            cout << "you have successfully withdrew: " << amount << endl;
+            balance1 -= amount;
+            return true;
+        }
+        else
+        {
+            cout << "insufficient amount." << endl;
+            return false;
+        }
+    }
+
+    virtual void deposit(double amount)
+    {
+        if (amount <= 0)
+        {
+            throw std::invalid_argument("amount");
+        }
+        cout << "you have successfully deposited: " << amount << endl;
+        balance1 += amount;
+    }
+};
+
+class SavingBankAccount : public BankAccount
+{
+    double minimum_balance;
+
+public:
+    SavingBankAccount(double a) : BankAccount(a)
+    {
+        type = "Saving";
+        minimum_balance = 1000.0;
+        if (a < minimum_balance)
+        {
+            cout << "invalid balance";
+        }
+    }
+    SavingBankAccount(double amount, double min) : BankAccount(amount)
+    {
+        type = "Saving";
+        minimum_balance = min;
+        if (amount < min)
+            cout << "invalid balance";
+    }
+    void deposit(double b)
+    {
+        if (b >= 100.0)
+        {
+            balance1 += b;
+        }
+        else
+            cout << "deposit too small" << endl;
+    }
+    bool withdraw(double b)
+    {
+        if ((balance1 - b) > minimum_balance)
+        {
+            balance1 -= b;
+            return true;
+        }
+        else
+            return false;
+    }
+    void display()
+    {
+        cout << "your account ID: " << ID << endl;
+        cout << "your account type: " << type << endl;
+        cout << "your account balance: " << balance1 << endl;
+        cout << "your minimum allowed balance :" << minimum_balance << endl;
+    }
+    void set_minbalance(double ewb)
+    {
+        minimum_balance = ewb;
+    }
+    double get_minbalance()
+    {
+        return minimum_balance;
+    }
+};
 
 class Client
 {
     string name, address, phone;
-    BankAccount *ptr{};
+    BankAccount *ptr;
 
 public:
-    //constructors
-    Client(string n, string a, string p, BankAccount *b) {
-        name = n, address = a, phone = p, ptr = b; }
-    //getters
+    Client(string n, string a, string p, BankAccount *b) { name = n, address = a, phone = p, ptr = b; }
     string get_name() { return name; }
     string get_add() { return address; }
     string get_phone() { return phone; }
-    BankAccount get_BankAcc() { return (*ptr); }
+    BankAccount &get_BankAcc() { return (*ptr); }
 };
 
 class BankApp
@@ -21,31 +140,13 @@ class BankApp
     vector<Client *> list;
 
 public:
-    //destructor
-    ~BankApp(){
-        for (auto l : list) {
-            delete l;
-        }
-        list.clear();
-    }
-    //methods
-    bool AddClient(string N, string Adr, string Ph, double bal ,int acc_type)
+    bool AddClient(string N, string Adr, string Ph, double bal)
     {
-        if (acc_type == 1) {
-            BankAccount *b_ptr;
-            b_ptr = new BankAccount(bal);
-            cout << "\nAn account was created with ID " << b_ptr->get_I() << " and Starting Balance " << b_ptr->get_B()
-                 << " L.E.\n";
-            list.push_back(new Client(N, Adr, Ph, b_ptr));
-            return 1;
-        } else{
-            SavingBankAccount *b_ptr;
-            b_ptr = new SavingBankAccount(bal);
-            cout << "\nAn account was created with ID " << b_ptr->get_I() << " and Starting Balance " << b_ptr->get_B()
-                 << " L.E.\n";
-            list.push_back(new Client(N, Adr, Ph, b_ptr));
-            return 1;
-        }
+        BankAccount *b_ptr;
+        b_ptr = new BankAccount(bal);
+        cout << "\nAn account was created with ID " << b_ptr->get_I() << " and Starting Balance " << b_ptr->get_B() << " L.E.\n";
+        list.push_back(new Client(N, Adr, Ph, b_ptr));
+        return 1;
     }
 
     void Bank()
@@ -56,6 +157,7 @@ public:
             cout << "Welcome to FCAI Banking Application" << endl;
             cout << "1. Create a New Account \n2. List Clients and Accounts\n3. Withdraw Money\n4. Deposit Money \n";
             cin >> choice;
+
             if (choice == 1)
             {
                 string name, add, phone;
@@ -87,7 +189,7 @@ public:
                         cin >> balance;
                     }
                 }
-                AddClient(name, add, phone, balance, AccType);
+                AddClient(name, add, phone, balance);
             }
             else if (choice == 2)
             {
@@ -95,58 +197,54 @@ public:
                 {
                     cout << "--------------------------" << list[i]->get_name() << "--------------------------\n";
                     cout << "Address: " << list[i]->get_add() << " Phone: " << list[i]->get_phone();
-                    cout << "\nAccount ID: " << list[i]->get_BankAcc().get_I() << "\nAccount type: " << list[i]->get_BankAcc().get_t()
+                    cout << "\nAccount ID: " << list[i]->get_BankAcc().get_I() << " " << list[i]->get_BankAcc().get_t()
                          << "\nBalance: " << list[i]->get_BankAcc().get_B() << endl;
                 }
             }
             else if (choice == 3 || choice == 4)
             {
-                string ID;
-                int amount;
-                Client *c{};
-                cout << "Please Enter Account ID: ";
                 cin.clear();
                 cin.ignore();
+                string ID;
+                int amount = 0, x = 0;
+                cout << "Please Enter Account ID: ";
                 getline(cin, ID);
+                Client *c;
                 for (int i = 0; i < list.size(); ++i)
                 {
                     if (list[i]->get_BankAcc().get_I() == ID)
                     {
-                        c = list[i];
-                        break;
+                        x = 1;
+
+                        if (choice == 3)
+                        {
+                            list[i]->get_BankAcc().Display_info();
+                            cout << "Please Enter The Amount to Withdraw: ";
+                            cin >> amount;
+                            while (!list[i]->get_BankAcc().withdraw(amount))
+                            {
+                                cout << "Please Enter The Amount to Withdraw: ";
+                                cin >> amount;
+                            }
+                            cout << "Thank You\n";
+                            cout << "Account ID: " << list[i]->get_BankAcc().get_I() << " New Balance: " << list[i]->get_BankAcc().get_B() << "\n";
+                        }
+                        else
+                        {
+                            cout << "Please Enter The Amount to deposit: ";
+                            cin >> amount;
+                            list[i]->get_BankAcc().deposit(amount);
+                            cout << "Thank You\n";
+                            cout << "Account ID: " << list[i]->get_BankAcc().get_I() << " New Balance: " << list[i]->get_BankAcc().get_B() << "\n";
+                        }
                     }
                 }
-                if (c == nullptr){
-                    throw std::invalid_argument("the ID you entered not found fraud detected.");
-                }
-                if (choice == 3)
-                {
-                    c->get_BankAcc().Display_info();
-                    cout << "Please Enter The Amount to Withdraw: ";
-                    cin.clear();
-                    cin.ignore();
-                    cin >> amount;
-                    while (!c->get_BankAcc().withdraw(amount))
-                    {
-                        cout << "Please Enter The Amount to Withdraw: ";
-                        cin >> amount;
-                    }
-                    cout << "Thank You\n";
-                    cout << "Account ID: " << c->get_BankAcc().get_I() << " New Balance: " << c->get_BankAcc().get_B() << "\n";
-                }
-                else
-                {
-                    cout << "Please Enter The Amount to deposit: ";
-                    cin.clear();
-                    cin.ignore();
-                    cin >> amount;
-                    c->get_BankAcc().deposit(amount);
-                    cout << "Thank You\n";
-                    cout << "Account ID: " << c->get_BankAcc().get_I() << " New Balance: " << c->get_BankAcc().get_B() << "\n";
-                }
+                if (!x)
+                    cout << "invalid ID\n";
             }
             else
             {
+
                 break;
             }
             cout << "-------------------------------------------------------------------\n";

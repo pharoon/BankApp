@@ -103,7 +103,8 @@ public:
             {
                 string ID;
                 int amount;
-                Client c1("none", "none", "none", nullptr);
+                BankAccount b1(0.0);
+                Client c1("none", "none", "none", &b1);
                 Client *c{&c1};
                 cout << "Please Enter Account ID: ";
                 getline(cin, ID);

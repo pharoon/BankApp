@@ -103,7 +103,7 @@ public:
             {
                 string ID;
                 int amount;
-                Client *c;
+                Client *c{};
                 cout << "Please Enter Account ID: ";
                 getline(cin, ID);
                 for (int i = 0; i < list.size(); ++i)

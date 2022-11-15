@@ -3,7 +3,7 @@
 class Client
 {
     string name, address, phone;
-    BankAccount *ptr;
+    BankAccount *ptr{};
 
 public:
     //constructors

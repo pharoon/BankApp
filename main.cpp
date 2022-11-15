@@ -114,11 +114,11 @@ public:
                         break;
                     }
                 }
+                if (c == nullptr){
+                    throw std::invalid_argument("the ID you entered not found fraud detected.");
+                }
                 if (choice == 3)
                 {
-                    if (c == nullptr){
-                        throw std::invalid_argument("the ID you entered not found fraud detected.");
-                    }
                     c->get_BankAcc().Display_info();
                     cout << "Please Enter The Amount to Withdraw: ";
                     cin.clear();

@@ -105,6 +105,8 @@ public:
                 int amount;
                 Client *c{};
                 cout << "Please Enter Account ID: ";
+                cin.clear();
+                cin.ignore();
                 getline(cin, ID);
                 for (int i = 0; i < list.size(); ++i)
                 {

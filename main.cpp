@@ -103,9 +103,7 @@ public:
             {
                 string ID;
                 int amount;
-                BankAccount b1(0.0);
-                Client c1("none", "none", "none", &b1);
-                Client *c{&c1};
+                Client *c{};
                 cout << "Please Enter Account ID: ";
                 getline(cin, ID);
                 for (int i = 0; i < list.size(); ++i)
@@ -118,6 +116,9 @@ public:
                 }
                 if (choice == 3)
                 {
+                    if (c == nullptr){
+                        throw std::invalid_argument("no accounts available yet please create an account first.");
+                    }
                     c->get_BankAcc().Display_info();
                     cout << "Please Enter The Amount to Withdraw: ";
                     cin.clear();

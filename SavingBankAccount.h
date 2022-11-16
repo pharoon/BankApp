@@ -3,23 +3,22 @@
 #define BANK_SAVINGBANKACCOUNT_H
 #include "BankAccount.h"
 
-
 class SavingBankAccount : public BankAccount
 {
 private:
     double minimum_balance;
+
 public:
     SavingBankAccount(double a);
     SavingBankAccount(double amount, double minimum);
-    //setters//
+    // setters//
     void set_minbalance(double newb);
-    //getters//
+    // getters//
     double get_minbalance();
-    //functions//
+    // functions//
     bool withdraw(double out);
     void deposit(double in);
     void display();
 };
 
-
-#endif //BANK_SAVINGBANKACCOUNT_H
+#endif // BANK_SAVINGBANKACCOUNT_H
